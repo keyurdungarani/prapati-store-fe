@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Pencil, Trash2, PlusCircle, PackageOpen, Download, ChevronLeft, ChevronRight, Filter, Building2, BarChart3 } from "lucide-react";
+import { Pencil, Trash2, PlusCircle, PackageOpen, Download, ChevronLeft, ChevronRight, Filter, Building2, BarChart3, FileSpreadsheet, FileText } from "lucide-react";
 import {
     useAddOrderMutation,
     useListOrdersQuery,
@@ -34,6 +34,7 @@ export default function OrderManager() {
     const [viewMode, setViewMode] = useState("all"); // "all" or "company"
     const [selectedCompany, setSelectedCompany] = useState("all");
     const [expandedCompanies, setExpandedCompanies] = useState({});
+    const [reportFormat, setReportFormat] = useState("excel"); // "excel" or "pdf"
     const PAGE_SIZE = 20;
 
     const {
@@ -133,11 +134,12 @@ export default function OrderManager() {
         reset();
     };
 
-    // Enhanced download handler with company filter
-    const handleExport = async (exportCompany = null) => {
+    // Enhanced download handler with company filter and format selection
+    const handleExport = async (exportCompany = null, format = null) => {
         setError("");
         setDownloading(true);
         try {
+            const selectedFormat = format || reportFormat;
             const bodyData = {};
             
             if (startDate && endDate) {
@@ -149,8 +151,13 @@ export default function OrderManager() {
                 bodyData.company = exportCompany;
             }
 
+            // Choose the correct endpoint based on format
+            const endpoint = selectedFormat === 'pdf' 
+                ? 'generate-order-report-pdf' 
+                : 'generate-order-report';
+
             const res = await fetch(
-                `${import.meta.env.VITE_BASE_URL}/api/order/generate-order-report`,
+                `${import.meta.env.VITE_BASE_URL}/api/order/${endpoint}`,
                 {
                     method: "POST",
                     headers: {
@@ -160,24 +167,27 @@ export default function OrderManager() {
                     body: JSON.stringify(bodyData),
                 }
             );
-            if (!res.ok) throw new Error("Export failed!");
+            
+            if (!res.ok) throw new Error(`${selectedFormat.toUpperCase()} export failed!`);
+            
             const blob = await res.blob();
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.href = url;
             
-            // Dynamic filename based on export type
-            const filename = exportCompany && exportCompany !== 'all' 
-                ? `${exportCompany.replace(/[^a-zA-Z0-9]/g, '_')}_orders_report.xlsx`
-                : "all_companies_orders_report.xlsx";
+            // Dynamic filename based on export type and format
+            const extension = selectedFormat === 'pdf' ? 'pdf' : 'xlsx';
+            const baseFilename = exportCompany && exportCompany !== 'all' 
+                ? `${exportCompany.replace(/[^a-zA-Z0-9]/g, '_')}_orders_report`
+                : "all_companies_orders_report";
             
-            link.setAttribute("download", filename);
+            link.setAttribute("download", `${baseFilename}.${extension}`);
             document.body.appendChild(link);
             link.click();
             link.parentNode.removeChild(link);
             window.URL.revokeObjectURL(url);
         } catch (e) {
-            setError("Export failed!");
+            setError(`${(format || reportFormat).toUpperCase()} export failed!`);
         }
         setDownloading(false);
     };
@@ -262,32 +272,75 @@ export default function OrderManager() {
                     </div>
                 )}
 
-                {/* Export Actions */}
-                <div className="flex items-center gap-2 ml-auto">
+                {/* Format Selection and Export Actions */}
+                <div className="flex items-center gap-3 ml-auto">
+                    {/* Format Selector */}
+                    <div className="flex items-center gap-2">
+                        <label className="text-sm font-medium text-gray-700">Format:</label>
+                        <div className="flex border rounded-lg overflow-hidden">
+                            <button
+                                onClick={() => setReportFormat("excel")}
+                                className={`px-3 py-2 text-sm font-medium transition flex items-center gap-1 ${
+                                    reportFormat === "excel" 
+                                        ? "bg-green-600 text-white" 
+                                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                }`}
+                                title="Excel Format"
+                            >
+                                <FileSpreadsheet size={14} />
+                                Excel
+                            </button>
+                            <button
+                                onClick={() => setReportFormat("pdf")}
+                                className={`px-3 py-2 text-sm font-medium transition flex items-center gap-1 ${
+                                    reportFormat === "pdf" 
+                                        ? "bg-red-600 text-white" 
+                                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                }`}
+                                title="PDF Format"
+                            >
+                                <FileText size={14} />
+                                PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Export Buttons */}
                     <button
                         onClick={() => handleExport('all')}
                         disabled={downloading}
-                        className="flex items-center gap-2 bg-blue-600 text-white py-2 px-3 rounded-lg font-medium hover:bg-blue-700 transition shadow-sm text-sm"
-                        title="Export All Companies"
+                        className={`flex items-center gap-2 py-2 px-3 rounded-lg font-medium transition shadow-sm text-sm ${
+                            reportFormat === 'pdf' 
+                                ? 'bg-red-600 hover:bg-red-700 text-white' 
+                                : 'bg-green-600 hover:bg-green-700 text-white'
+                        }`}
+                        title={`Export All Companies (${reportFormat.toUpperCase()})`}
                     >
                         <Download size={16} />
-                        Export All
+                        Export All ({reportFormat.toUpperCase()})
                     </button>
                     
                     {selectedCompany !== "all" && viewMode === "all" && (
                         <button
                             onClick={() => handleExport(selectedCompany)}
                             disabled={downloading}
-                            className="flex items-center gap-2 bg-[#008080] text-white py-2 px-3 rounded-lg font-medium hover:bg-[#006666] transition shadow-sm text-sm"
-                            title={`Export ${selectedCompany}`}
+                            className={`flex items-center gap-2 py-2 px-3 rounded-lg font-medium transition shadow-sm text-sm ${
+                                reportFormat === 'pdf' 
+                                    ? 'bg-red-600 hover:bg-red-700 text-white' 
+                                    : 'bg-[#008080] hover:bg-[#006666] text-white'
+                            }`}
+                            title={`Export ${selectedCompany} (${reportFormat.toUpperCase()})`}
                         >
                             <Download size={16} />
-                            Export {selectedCompany}
+                            Export {selectedCompany} ({reportFormat.toUpperCase()})
                         </button>
                     )}
                     
                     {downloading && (
-                        <span className="text-sm text-gray-600">Exporting...</span>
+                        <span className="text-sm text-gray-600 flex items-center gap-1">
+                            <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+                            Generating {reportFormat.toUpperCase()}...
+                        </span>
                     )}
                 </div>
             </div>
@@ -534,16 +587,28 @@ export default function OrderManager() {
                                                         <div className="text-sm opacity-90">Total Quantity: {companyData.totalQty}</div>
                                                         <div className="font-semibold">Total Amount: ₹{companyData.totalAmount.toFixed(2)}</div>
                                                     </div>
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleExport(companyName);
-                                                        }}
-                                                        className="bg-white/20 hover:bg-white/30 p-2 rounded transition"
-                                                        title={`Export ${companyName} orders`}
-                                                    >
-                                                        <Download size={16} />
-                                                    </button>
+                                                    <div className="flex gap-1">
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleExport(companyName, 'excel');
+                                                            }}
+                                                            className="bg-white/20 hover:bg-white/30 p-2 rounded transition"
+                                                            title={`Export ${companyName} orders (Excel)`}
+                                                        >
+                                                            <FileSpreadsheet size={14} />
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleExport(companyName, 'pdf');
+                                                            }}
+                                                            className="bg-white/20 hover:bg-white/30 p-2 rounded transition"
+                                                            title={`Export ${companyName} orders (PDF)`}
+                                                        >
+                                                            <FileText size={14} />
+                                                        </button>
+                                                    </div>
                                                     <ChevronRight 
                                                         size={20} 
                                                         className={`transform transition-transform ${expandedCompanies[companyName] ? 'rotate-90' : ''}`}
