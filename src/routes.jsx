@@ -5,6 +5,7 @@ import HomeScreen from "./components/landing/HomeScreen";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import CompanyScreen from "./components/company/CompanyScreen";
 import OrderScreen from "./components/Order/OrderScreen";
+import ReturnOrderScreen from "./components/ReturnOrder/ReturnOrderScreen";
 
 export default function AppRoutes() {
     return (
@@ -33,6 +34,14 @@ export default function AppRoutes() {
                     element={
                         <ProtectedRoutes>
                             <OrderScreen />
+                        </ProtectedRoutes>
+                    }
+                />
+                <Route
+                    path="/return-order"
+                    element={
+                        <ProtectedRoutes>
+                            <ReturnOrderScreen />
                         </ProtectedRoutes>
                     }
                 />
