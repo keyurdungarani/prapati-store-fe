@@ -6,6 +6,8 @@ import ProtectedRoutes from "./utils/ProtectedRoutes";
 import CompanyScreen from "./components/company/CompanyScreen";
 import OrderScreen from "./components/Order/OrderScreen";
 import ReturnOrderScreen from "./components/ReturnOrder/ReturnOrderScreen";
+import TapeRollScreen from "./components/TapRoll/TapeRollScreen";
+import KraftMailerScreen from "./components/KraftMailer/KraftMailerScreen";
 
 export default function AppRoutes() {
     return (
@@ -42,6 +44,22 @@ export default function AppRoutes() {
                     element={
                         <ProtectedRoutes>
                             <ReturnOrderScreen />
+                        </ProtectedRoutes>
+                    }
+                />
+                <Route
+                    path="/kraftmailer-screen"
+                    element={
+                        <ProtectedRoutes>
+                            <KraftMailerScreen />
+                        </ProtectedRoutes>
+                    }
+                />
+                <Route
+                    path="/taperoll-screen"
+                    element={
+                        <ProtectedRoutes>
+                            <TapeRollScreen />
                         </ProtectedRoutes>
                     }
                 />

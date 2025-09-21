@@ -35,6 +35,12 @@ export default function Header() {
                         <Link to="/order" className="text-base font-medium text-gray-700 hover:text-[#008080] transition">
                             Order
                         </Link>
+                        <Link to="/kraftmailer-screen" className="text-base font-medium text-gray-700 hover:text-[#008080] transition">
+                            Kraft Mailer
+                        </Link>
+                        <Link to="/taperoll-screen" className="text-base font-medium text-gray-700 hover:text-[#008080] transition">
+                            Tape Roll
+                        </Link>
                         <Link to="/return-order" className="text-base font-medium text-gray-700 hover:text-[#FF6B6B] transition">
                             Return Orders
                         </Link>
