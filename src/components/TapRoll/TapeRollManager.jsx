@@ -264,7 +264,8 @@ export default function TapeRollManager() {
                         <label className="block text-gray-700 font-medium mb-1">Price</label>
                         <input
                             type="number"
-                            {...register("price", { required: "Price is required", min: 0 })}
+                            step="any"
+                            {...register("price", { required: "Price is required", min: 0, step: "any" })}
                             className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] ${errors.price ? "border-red-500" : "border-gray-300"}`}
                             placeholder="Enter price"
                         />

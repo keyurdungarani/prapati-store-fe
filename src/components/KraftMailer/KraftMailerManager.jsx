@@ -286,7 +286,11 @@ export default function KraftMailerManager() {
                         <label className="block text-gray-700 font-medium mb-1">Size (Width)</label>
                         <input
                             type="number"
-                            {...register("size.width", { required: "Width is required", min: 1 })}
+                            step="any"
+                            {...register("size.width", { 
+                                required: "Width is required", 
+                                min: { value: 0.01, message: "Width must be greater than 0" } 
+                            })}
                             className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] ${errors.size?.width ? "border-red-500" : "border-gray-300"}`}
                             placeholder="Width"
                         />
@@ -298,7 +302,13 @@ export default function KraftMailerManager() {
                         <label className="block text-gray-700 font-medium mb-1">Size (Height)</label>
                         <input
                             type="number"
-                            {...register("size.height", { required: "Height is required", min: 1 })}
+                            step="any"
+                            {...register("size.height", { 
+                                required: "Height is required", 
+                                min: { value: 0.01, message: "Height must be greater than 0" }, 
+                                valueAsNumber: true,
+                                step: "any"
+                            })}
                             className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] ${errors.size?.height ? "border-red-500" : "border-gray-300"}`}
                             placeholder="Height"
                         />
@@ -310,7 +320,8 @@ export default function KraftMailerManager() {
                         <label className="block text-gray-700 font-medium mb-1">Size (Depth)</label>
                         <input
                             type="number"
-                            {...register("size.depth", { required: "Depth is required", min: 1 })}
+                            step="any"
+                            {...register("size.depth", { required: "Depth is required", min: 0.01, step: "any" })}
                             className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] ${errors.size?.depth ? "border-red-500" : "border-gray-300"}`}
                             placeholder="Depth"
                         />
