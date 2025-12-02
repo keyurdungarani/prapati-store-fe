@@ -48,8 +48,8 @@ export default function OrderManager() {
         defaultValues: {
             date: "",
             product: "",
-            qty: "",
-            price: "",
+            qty: 0,
+            price: 0,
             company: "",
             platforms: [],
         },
@@ -380,7 +380,12 @@ export default function OrderManager() {
                         <label className="block text-gray-700 font-medium mb-1">Quantity</label>
                         <input
                             type="number"
-                            {...register("qty", { required: "Quantity is required", min: 1 })}
+                            step="any"
+                            {...register("qty", { 
+                                required: "Quantity is required", 
+                                min: { value: 0.01, message: "Quantity must be greater than 0" },
+                                valueAsNumber: true
+                            })}
                             className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] ${errors.qty ? "border-red-500" : "border-gray-300"}`}
                             placeholder="Enter quantity"
                         />
@@ -392,7 +397,12 @@ export default function OrderManager() {
                         <label className="block text-gray-700 font-medium mb-1">Price</label>
                         <input
                             type="number"
-                            {...register("price", { required: "Price is required", min: 0 })}
+                            step="any"
+                            {...register("price", { 
+                                required: "Price is required", 
+                                min: { value: 0.01, message: "Price must be greater than 0" },
+                                valueAsNumber: true
+                            })}
                             className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] ${errors.price ? "border-red-500" : "border-gray-300"}`}
                             placeholder="Enter price"
                         />

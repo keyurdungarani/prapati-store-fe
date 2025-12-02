@@ -36,9 +36,9 @@ export default function KraftMailerManager() {
     } = useForm({
         defaultValues: {
             date: "",
-            quantity: "",
-            price: "",
-            size: { width: "", height: "", depth: "" },
+            quantity: 0,
+            price: 0,
+            size: { width: 0, height: 0, depth: 0 },
         },
     });
 
@@ -262,7 +262,12 @@ export default function KraftMailerManager() {
                         <label className="block text-gray-700 font-medium mb-1">Quantity</label>
                         <input
                             type="number"
-                            {...register("quantity", { required: "Quantity is required", min: 1 })}
+                            step="any"
+                            {...register("quantity", { 
+                                required: "Quantity is required", 
+                                min: { value: 0.01, message: "Quantity must be greater than 0" },
+                                valueAsNumber: true
+                            })}
                             className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] ${errors.quantity ? "border-red-500" : "border-gray-300"}`}
                             placeholder="Enter quantity"
                         />
@@ -274,7 +279,12 @@ export default function KraftMailerManager() {
                         <label className="block text-gray-700 font-medium mb-1">Price</label>
                         <input
                             type="number"
-                            {...register("price", { required: "Price is required", min: 0 })}
+                            step="any"
+                            {...register("price", { 
+                                required: "Price is required", 
+                                min: { value: 0.01, message: "Price must be greater than 0" },
+                                valueAsNumber: true
+                            })}
                             className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] ${errors.price ? "border-red-500" : "border-gray-300"}`}
                             placeholder="Enter price"
                         />
@@ -289,7 +299,8 @@ export default function KraftMailerManager() {
                             step="any"
                             {...register("size.width", { 
                                 required: "Width is required", 
-                                min: { value: 0.01, message: "Width must be greater than 0" } 
+                                min: { value: 0.01, message: "Width must be greater than 0" },
+                                valueAsNumber: true
                             })}
                             className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] ${errors.size?.width ? "border-red-500" : "border-gray-300"}`}
                             placeholder="Width"
@@ -306,8 +317,7 @@ export default function KraftMailerManager() {
                             {...register("size.height", { 
                                 required: "Height is required", 
                                 min: { value: 0.01, message: "Height must be greater than 0" }, 
-                                valueAsNumber: true,
-                                step: "any"
+                                valueAsNumber: true
                             })}
                             className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] ${errors.size?.height ? "border-red-500" : "border-gray-300"}`}
                             placeholder="Height"
@@ -321,7 +331,11 @@ export default function KraftMailerManager() {
                         <input
                             type="number"
                             step="any"
-                            {...register("size.depth", { required: "Depth is required", min: 0.01, step: "any" })}
+                            {...register("size.depth", { 
+                                required: "Depth is required", 
+                                min: { value: 0.01, message: "Depth must be greater than 0" },
+                                valueAsNumber: true
+                            })}
                             className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] ${errors.size?.depth ? "border-red-500" : "border-gray-300"}`}
                             placeholder="Depth"
                         />
