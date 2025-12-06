@@ -66,7 +66,19 @@ export default function ReturnOrderManager() {
         const companyMatch = selectedCompany === "all" || order.company === selectedCompany;
         const reasonMatch = selectedReturnReason === "all" || order.returnReason === selectedReturnReason;
         const returnByMatch = selectedReturnBy === "all" || order.returnBy === selectedReturnBy;
-        return companyMatch && reasonMatch && returnByMatch;
+        
+        // Date range filter
+        let dateMatch = true;
+        if (startDate && endDate) {
+            // Parse the date string (DD-MM-YYYY format from backend)
+            const orderDateParts = order.date.split('-');
+            const orderDate = new Date(orderDateParts[2], orderDateParts[1] - 1, orderDateParts[0]);
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            dateMatch = orderDate >= start && orderDate <= end;
+        }
+        
+        return companyMatch && reasonMatch && returnByMatch && dateMatch;
     });
     
     // Calculate paginated return orders
@@ -483,6 +495,102 @@ export default function ReturnOrderManager() {
                     )}
                 </div>
             </form>
+
+            {/* Return Order Summary - Products with 50+ returns in last 30 days */}
+            {(() => {
+                // Calculate date 30 days ago
+                const today = new Date();
+                const thirtyDaysAgo = new Date(today);
+                thirtyDaysAgo.setDate(today.getDate() - 30);
+
+                // Filter return orders from last 30 days
+                const last30DaysOrders = returnOrders.filter(order => {
+                    // Parse the date string (DD-MM-YYYY format from backend)
+                    const orderDateParts = order.date.split('-');
+                    const orderDate = new Date(orderDateParts[2], orderDateParts[1] - 1, orderDateParts[0]);
+                    return orderDate >= thirtyDaysAgo && orderDate <= today;
+                });
+
+                // Group return orders by product name and calculate total quantities
+                const productSummary = last30DaysOrders.reduce((acc, order) => {
+                    const productName = order.product;
+                    if (!acc[productName]) {
+                        acc[productName] = {
+                            product: productName,
+                            totalQty: 0,
+                            returnCount: 0,
+                            totalAmount: 0,
+                            companies: new Set(),
+                            reasons: {},
+                        };
+                    }
+                    acc[productName].totalQty += order.qty;
+                    acc[productName].returnCount += 1;
+                    acc[productName].totalAmount += order.qty * order.price;
+                    acc[productName].companies.add(order.company);
+                    
+                    // Track return reasons
+                    if (!acc[productName].reasons[order.returnReason]) {
+                        acc[productName].reasons[order.returnReason] = 0;
+                    }
+                    acc[productName].reasons[order.returnReason]++;
+                    
+                    return acc;
+                }, {});
+
+                // Filter products with total quantity >= 50 and convert to array
+                const highReturnProducts = Object.values(productSummary)
+                    .filter(item => item.totalQty >= 50)
+                    .sort((a, b) => b.totalQty - a.totalQty); // Sort by highest returns first
+
+                return highReturnProducts.length > 0 ? (
+                    <div className="mb-8 bg-red-50 border-2 border-red-200 rounded-lg p-6">
+                        <div className="flex items-center gap-2 mb-4">
+                            <RotateCcw className="text-red-600 w-6 h-6" />
+                            <h2 className="text-lg font-bold text-red-700">
+                                High Return Alert - Products with 50+ Returns in Last 30 Days
+                            </h2>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {highReturnProducts.map((item) => (
+                                <div 
+                                    key={item.product} 
+                                    className="bg-white rounded-lg p-4 border border-red-300 shadow-sm hover:shadow-md transition"
+                                >
+                                    <h3 className="text-md font-bold text-gray-900 mb-2">{item.product}</h3>
+                                    <div className="space-y-1 text-sm">
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600">Total Qty Returned:</span>
+                                            <span className="font-semibold text-red-600">{item.totalQty}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600">Return Instances:</span>
+                                            <span className="font-semibold">{item.returnCount}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600">Total Amount:</span>
+                                            <span className="font-semibold">₹{item.totalAmount.toFixed(2)}</span>
+                                        </div>
+                                        <div className="mt-2 pt-2 border-t">
+                                            <span className="text-gray-600 text-xs">Companies: </span>
+                                            <span className="text-xs font-medium">{Array.from(item.companies).join(", ")}</span>
+                                        </div>
+                                        <div className="mt-1">
+                                            <span className="text-gray-600 text-xs">Top Reason: </span>
+                                            <span className="text-xs font-medium">
+                                                {Object.entries(item.reasons)
+                                                    .sort((a, b) => b[1] - a[1])[0][0]} 
+                                                ({Object.entries(item.reasons)
+                                                    .sort((a, b) => b[1] - a[1])[0][1]}x)
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ) : null;
+            })()}
 
             {/* Return Orders List */}
             <div>

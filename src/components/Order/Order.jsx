@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Pencil, Trash2, PlusCircle, PackageOpen, Download, ChevronLeft, ChevronRight, Filter, Building2, BarChart3, FileSpreadsheet, FileText } from "lucide-react";
+import { useToaster } from "../../context/ToasterContext";
 import {
     useAddOrderMutation,
     useListOrdersQuery,
@@ -14,11 +15,26 @@ const PLATFORMS = ["Amazon", "Flipkart", "Meesho"];
 
 export default function OrderManager() {
     // API hooks
-    const { data: companiesData } = useListCompaniesQuery();
+    const { showToaster } = useToaster();
+    const { data: companiesData, error: companiesError, isLoading: companiesLoading } = useListCompaniesQuery();
     const companies = companiesData?.data || [];
     
-    const { data, refetch } = useListOrdersQuery();
+    useEffect(() => {
+        if (companiesError) {
+            const errorMessage = companiesError?.data?.error || companiesError?.data?.message || "Failed to load companies";
+            showToaster({ message: errorMessage, status: "error" });
+        }
+    }, [companiesError, showToaster]);
+    
+    const { data, refetch, error: ordersError, isLoading: ordersLoading } = useListOrdersQuery();
     const orders = data?.data || [];
+    
+    useEffect(() => {
+        if (ordersError) {
+            const errorMessage = ordersError?.data?.error || ordersError?.data?.message || "Failed to load orders";
+            showToaster({ message: errorMessage, status: "error" });
+        }
+    }, [ordersError, showToaster]);
     
     const [addOrder] = useAddOrderMutation();
     const [updateOrder] = useUpdateOrderMutation();
@@ -95,14 +111,18 @@ export default function OrderManager() {
         try {
             if (editing) {
                 await updateOrder({ id: editing._id, ...data }).unwrap();
+                showToaster({ message: "Order updated successfully!", status: "success" });
                 setEditing(null);
             } else {
                 await addOrder(data).unwrap();
+                showToaster({ message: "Order added successfully!", status: "success" });
             }
             reset();
             refetch();
         } catch (e) {
-            setError(e?.data?.message || "Operation failed!");
+            const errorMessage = e?.data?.error || e?.data?.message || "Operation failed!";
+            setError(errorMessage);
+            showToaster({ message: errorMessage, status: "error" });
         }
     };
 
@@ -122,9 +142,12 @@ export default function OrderManager() {
         setError("");
         try {
             await deleteOrder(id).unwrap();
+            showToaster({ message: "Order deleted successfully!", status: "success" });
             refetch();
         } catch (e) {
-            setError(e?.data?.message || "Delete failed!");
+            const errorMessage = e?.data?.error || e?.data?.message || "Delete failed!";
+            setError(errorMessage);
+            showToaster({ message: errorMessage, status: "error" });
         }
     };
 
@@ -168,7 +191,11 @@ export default function OrderManager() {
                 }
             );
             
-            if (!res.ok) throw new Error(`${selectedFormat.toUpperCase()} export failed!`);
+            if (!res.ok) {
+                const errorData = await res.json();
+                const errorMessage = errorData?.error || errorData?.message || `${selectedFormat.toUpperCase()} export failed!`;
+                throw new Error(errorMessage);
+            }
             
             const blob = await res.blob();
             const url = window.URL.createObjectURL(blob);
@@ -186,8 +213,11 @@ export default function OrderManager() {
             link.click();
             link.parentNode.removeChild(link);
             window.URL.revokeObjectURL(url);
+            showToaster({ message: `${selectedFormat.toUpperCase()} exported successfully!`, status: "success" });
         } catch (e) {
-            setError(`${(format || reportFormat).toUpperCase()} export failed!`);
+            const errorMessage = e?.message || `${(format || reportFormat).toUpperCase()} export failed!`;
+            setError(errorMessage);
+            showToaster({ message: errorMessage, status: "error" });
         }
         setDownloading(false);
     };
