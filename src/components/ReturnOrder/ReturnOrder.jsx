@@ -496,7 +496,7 @@ export default function ReturnOrderManager() {
                 </div>
             </form>
 
-            {/* Return Order Summary - Products with 50+ returns in last 30 days */}
+            {/* Return Order Summary - Products with 30+ returns in last 30 days (by sum of qty) */}
             {(() => {
                 // Calculate date 30 days ago
                 const today = new Date();
@@ -540,7 +540,7 @@ export default function ReturnOrderManager() {
 
                 // Filter products with total quantity >= 50 and convert to array
                 const highReturnProducts = Object.values(productSummary)
-                    .filter(item => item.totalQty >= 50)
+                    .filter(item => item.totalQty >= 30)
                     .sort((a, b) => b.totalQty - a.totalQty); // Sort by highest returns first
 
                 return highReturnProducts.length > 0 ? (
@@ -548,7 +548,7 @@ export default function ReturnOrderManager() {
                         <div className="flex items-center gap-2 mb-4">
                             <RotateCcw className="text-red-600 w-6 h-6" />
                             <h2 className="text-lg font-bold text-red-700">
-                                High Return Alert - Products with 50+ Returns in Last 30 Days
+                                High Return Alert - Products with 30+ Returns in Last 30 Days
                             </h2>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
