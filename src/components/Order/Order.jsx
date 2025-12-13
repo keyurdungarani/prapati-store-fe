@@ -180,7 +180,7 @@ export default function OrderManager() {
                 : 'generate-order-report';
 
             const res = await fetch(
-                `${import.meta.env.VITE_BASE_URL}/api/order/${endpoint}`,
+                `${import.meta.env.VITE_BASE_URL}/order/${endpoint}`,
                 {
                     method: "POST",
                     headers: {

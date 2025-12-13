@@ -19,7 +19,7 @@ export default function LoginForm() {
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
-            navigate("/order", { replace: true });
+            navigate("/app/order", { replace: true });
         }
     }, [navigate]);
 
@@ -29,7 +29,7 @@ export default function LoginForm() {
             const response = await loginUser(data).unwrap();
             if (response.statusCode === 200) {
                 localStorage.setItem("token", response.data.token);
-                navigate("/order");
+                navigate("/app/order");
             } else if (response.statusCode === 401) {
                 setErrorMessage(response.message);
             } else {
@@ -140,7 +140,7 @@ export default function LoginForm() {
                 <div className="mt-6 text-center text-sm text-gray-600">
                     <p>
                         Don’t have an account?{" "}
-                        <Link to="/register" className="text-[#008080] font-medium hover:underline cursor-pointer">
+                        <Link to="/app/register" className="text-[#008080] font-medium hover:underline cursor-pointer">
                             Register
                         </Link>
                     </p>

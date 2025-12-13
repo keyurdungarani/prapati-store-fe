@@ -1,13 +1,13 @@
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import HomeScreen from "./components/landing/HomeScreen";
-import LoginForm from "./components/Auth/LoginForm";
+import LoginForm from "./components/auth/LoginForm";
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<LoginForm />} />
+      <Route path="/app" element={<LoginForm />} />
       <Route
-        path="/home"
+        path="/app/home"
         element={
           <ProtectedRoutes>
             <HomeScreen />

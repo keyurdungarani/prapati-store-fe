@@ -124,7 +124,7 @@ export default function KraftMailerManager() {
                 : 'kraftmailer-report';
 
             const res = await fetch(
-                `${import.meta.env.VITE_BASE_URL}/api/kraftmailer/${endpoint}`,
+                `${import.meta.env.VITE_BASE_URL}/kraftmailer/${endpoint}`,
                 {
                     method: "POST",
                     headers: {

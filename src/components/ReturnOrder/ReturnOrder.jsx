@@ -162,7 +162,7 @@ export default function ReturnOrderManager() {
                 : 'generate-return-order-report';
 
             const res = await fetch(
-                `${import.meta.env.VITE_BASE_URL}/api/return-order/${endpoint}`,
+                `${import.meta.env.VITE_BASE_URL}/return-order/${endpoint}`,
                 {
                     method: "POST",
                     headers: {

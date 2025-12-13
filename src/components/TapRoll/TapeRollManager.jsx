@@ -104,7 +104,7 @@ export default function TapeRollManager() {
                 : 'taproll-report';
 
             const res = await fetch(
-                `${import.meta.env.VITE_BASE_URL}/api/taperoll/${endpoint}`,
+                `${import.meta.env.VITE_BASE_URL}/taperoll/${endpoint}`,
                 {
                     method: "POST",
                     headers: {
