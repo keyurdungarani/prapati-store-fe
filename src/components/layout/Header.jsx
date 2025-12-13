@@ -13,7 +13,7 @@ export default function Header() {
     const handleLogout = () => {
         localStorage.removeItem("token");
         setIsLoggedIn(false);
-        navigate("/");
+        navigate("/app");
     };
 
     return (
@@ -22,26 +22,26 @@ export default function Header() {
                 <div className="flex items-center justify-between h-16">
                     {/* Left: Brand Name */}
                     <div className="flex items-center">
-                        <Link to="/" className="text-2xl font-bold text-[#008080]">
+                        <Link to="/app" className="text-2xl font-bold text-[#008080]">
                             Prapatti Store
                         </Link>
                     </div>
 
                     {/* Center: Menu */}
                     <nav className="flex-1 flex justify-center items-center gap-8">
-                        <Link to="/company" className="text-base font-medium text-gray-700 hover:text-[#008080] transition">
+                        <Link to="/app/company" className="text-base font-medium text-gray-700 hover:text-[#008080] transition">
                             Company
                         </Link>
-                        <Link to="/order" className="text-base font-medium text-gray-700 hover:text-[#008080] transition">
+                        <Link to="/app/order" className="text-base font-medium text-gray-700 hover:text-[#008080] transition">
                             Order
                         </Link>
-                        <Link to="/kraftmailer-screen" className="text-base font-medium text-gray-700 hover:text-[#008080] transition">
+                        <Link to="/app/kraftmailer-screen" className="text-base font-medium text-gray-700 hover:text-[#008080] transition">
                             Kraft Mailer
                         </Link>
-                        <Link to="/taperoll-screen" className="text-base font-medium text-gray-700 hover:text-[#008080] transition">
+                        <Link to="/app/taperoll-screen" className="text-base font-medium text-gray-700 hover:text-[#008080] transition">
                             Tape Roll
                         </Link>
-                        <Link to="/return-order" className="text-base font-medium text-gray-700 hover:text-[#FF6B6B] transition">
+                        <Link to="/app/return-order" className="text-base font-medium text-gray-700 hover:text-[#FF6B6B] transition">
                             Return Orders
                         </Link>
                     </nav>

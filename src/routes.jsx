@@ -13,10 +13,10 @@ export default function AppRoutes() {
     return (
         <Router>
             <Routes>
-                <Route path="/" element={<LoginForm />} />
-                <Route path="/register" element={<RegisterForm />} />
+                <Route path="/app" element={<LoginForm />} />
+                <Route path="/app/register" element={<RegisterForm />} />
                 <Route
-                    path="/home"
+                    path="/app/home"
                     element={
                         <ProtectedRoutes>
                             <HomeScreen />
@@ -24,7 +24,7 @@ export default function AppRoutes() {
                     }
                 />
                 <Route
-                    path="/company"
+                    path="/app/company"
                     element={
                         <ProtectedRoutes>
                             <CompanyScreen />
@@ -32,7 +32,7 @@ export default function AppRoutes() {
                     }
                 />
                 <Route
-                    path="/order"
+                    path="/app/order"
                     element={
                         <ProtectedRoutes>
                             <OrderScreen />
@@ -40,7 +40,7 @@ export default function AppRoutes() {
                     }
                 />
                 <Route
-                    path="/return-order"
+                    path="/app/return-order"
                     element={
                         <ProtectedRoutes>
                             <ReturnOrderScreen />
@@ -48,7 +48,7 @@ export default function AppRoutes() {
                     }
                 />
                 <Route
-                    path="/kraftmailer-screen"
+                    path="/app/kraftmailer-screen"
                     element={
                         <ProtectedRoutes>
                             <KraftMailerScreen />
@@ -56,7 +56,7 @@ export default function AppRoutes() {
                     }
                 />
                 <Route
-                    path="/taperoll-screen"
+                    path="/app/taperoll-screen"
                     element={
                         <ProtectedRoutes>
                             <TapeRollScreen />
